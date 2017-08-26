@@ -2,79 +2,75 @@ package servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-import common.DBconnector;
+import service.UserService;
+import service.implement.UserServiceImpl;
 
-public class UserServlet extends HttpServlet{
+public class UserServlet extends CommonServlet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private UserService us = new UserServiceImpl();
 	
-	public void doPost(HttpServletRequest req, HttpServletResponse resp)
-	        throws ServletException, IOException {
-		//System.out.println("두 포스트 호출햇네여~~"+req.getParameterMap());
-		req.setCharacterEncoding("utf-8"); 
-		String id =req.getParameter("id");
-		String pwd =req.getParameter("pwd");
-		String name =req.getParameter("name");
-		String[] hobbies =req.getParameterValues("hobby");
-		String hobby="";
-		for(String h:hobbies) {
-			hobby += h+",";
+	public void doPost(HttpServletRequest request, HttpServletResponse resp)
+			throws ServletException, IOException {
+		request.setCharacterEncoding("utf-8");
+		String command = request.getParameter("command");
+		if(command==null) {
+			doProcess(resp, "잘못된 요청입니다.");
+		}else {
+			if(command.equals("signin")) {
+				String id = request.getParameter("id");
+				String pwd = request.getParameter("pwd");
+				String name = request.getParameter("name");
+				String[] hobbies = request.getParameterValues("hobby");
+				String hobby ="";
+				for(String h : hobbies) {
+					hobby += h + ",";
+				}
+				hobby = hobby.substring(0, hobby.length()-1);
+				Map<String, String> hm = new HashMap<String, String>();
+				hm.put("id", id);
+				hm.put("pwd", pwd);
+				hm.put("name", name);
+				hm.put("hobby", hobby);
+				String result = us.insertUser(hm);
+				doProcess(resp, result);
+			}else if(command.equals("login")) {
+				String id = request.getParameter("id");
+				String pwd = request.getParameter("pwd");
+				Map<String, String> hm = new HashMap<String, String>();
+				hm.put("id", id);
+				hm.put("pwd", pwd);
+				Map<String, String> resultMap = us.selectUser(hm);
+				if(resultMap.get("id")!=null) {
+					HttpSession session = request.getSession();
+					session.setAttribute("id", resultMap.get("id"));
+					session.setAttribute("user_no", resultMap.get("user_no"));
+					session.setAttribute("name", resultMap.get("name"));
+					session.setAttribute("hobby", resultMap.get("hobby"));
+				}
+				doProcess(resp, resultMap.get("result"));
+			}
 		}
-		//hobby=hobby.substring(0,hobby.length()-1);
-		//String result="입력하신 ID : "+id+"<br>";
-		String result = name+"님 회원가입 실패함";
-		//result += "입력하신 취미 : "+hobby+ "<br>";
-		Connection con;
-		try {
-			con = DBconnector.getCon();
-			String sql="insert into user(id,password,name,hobby)";
-			sql += " values(?,?,?,?)";
-			PreparedStatement ps = con.prepareStatement(sql);//접속 후  커리창을 만든 상태
-			ps.setString(1,id);
-			ps.setString(2,pwd);
-			ps.setString(3,name);
-			ps.setString(4,hobby);//물음표에 들어갈 값
-			int row=ps.executeUpdate();
-			if(row==1) {
-				result="회원가입에 성공하셨습니다.";
-			}		
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-		doProcess(resp,result);
-				
-		//PrintWriter out=resp.getWriter();
 	}
-	public void doGet(HttpServletRequest req, HttpServletResponse resp)
-	        throws ServletException, IOException {
-		//ArrayList<String> list=new ArrayList<String>();
-		//list.add("1");
-		
-		/*Map<String, String[]> m =req.getParameterMap();
-		Iterator<String> it=m.keySet().iterator();
-		String result="두 겟 호출했네요~~";
-		while(it.hasNext()) {
-			String key=it.next();
-			result += key+":"+req.getParameter(key);
-		}
-		doProcess(resp,result);*/
-		//PrintWriter out=resp.getWriter();
-		//System.out.println("두겟 호출햇네요~~"+req.getParameterMap());
-		
-	}
-	public void doProcess(HttpServletResponse resq, String writeStr)
-		throws IOException {
-		resq.setContentType("Text/html; charset =UTF-8");
-		PrintWriter out = resq.getWriter();
-		out.print(writeStr);//jsp의 일을 대신해주는 것이 아님
+
+	public void doGet(HttpServletRequest request, HttpServletResponse resp)
+			throws ServletException, IOException {
+
+	}	
+	public void doProcess(HttpServletResponse resp, String writeStr) 
+			throws IOException {
+		resp.setContentType("text/html;charset=utf-8");
+		PrintWriter out = resp.getWriter();
+		out.print(writeStr);
 	}
 }

@@ -4,7 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class DBconnector {
+public class DBConnector {
 	private static Connection con;
 	public static Connection getCon()
 		throws ClassNotFoundException, SQLException {

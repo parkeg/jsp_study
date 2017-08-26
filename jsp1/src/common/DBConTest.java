@@ -12,7 +12,7 @@ public class DBConTest {
 		Connection con;
 		Statement st;
 		try {
-			con = DBconnector.getCon();
+			con = DBConnector.getCon();
 			st = con.createStatement();
 			String sql = "select * from user";
 			ResultSet rs = st.executeQuery(sql);
