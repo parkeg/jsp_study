@@ -53,12 +53,32 @@ public class UserServlet extends CommonServlet {
 				Map<String, String> resultMap = us.selectUser(hm);
 				if(resultMap.get("id")!=null) {
 					HttpSession session = request.getSession();
-					session.setAttribute("id", resultMap.get("id"));
-					session.setAttribute("user_no", resultMap.get("user_no"));
-					session.setAttribute("name", resultMap.get("name"));
-					session.setAttribute("hobby", resultMap.get("hobby"));
+					session.setAttribute("user", resultMap);
+					//session.setAttribute("id", resultMap.get("id"));
+					//session.setAttribute("user_no", resultMap.get("user_no"));
+					//session.setAttribute("name", resultMap.get("name"));
+					//session.setAttribute("hobby", resultMap.get("hobby"));
 				}
 				doProcess(resp, resultMap.get("result"));
+			}else if(command.equals("logout")) {
+				HttpSession session = request.getSession();
+				session.invalidate();//session이 가지고 있는 키값 user을 초기화 시킴
+				resp.sendRedirect("/login.jsp");//이동
+			}else if(command.equals("delete")) {
+				String userNo=request.getParameter("userNo");
+				//HttpSession session=request.getSession();
+				Map<String, String> hm = new HashMap<String, String>();
+				hm.put("user_no",userNo);
+				int rCnt=us.deleteUser(hm);
+				String result="회원탈퇴에 실패하셨습니다.";
+				if(rCnt==1) {
+					result="회원탈퇴에 성공하셨습니다.";
+					result += "<script>";
+					result += "alert('회원탈퇴에 성공하셨습니다.');";
+					result += "</script>";
+				}
+
+				doProcess(resp, result);
 			}
 		}
 	}
