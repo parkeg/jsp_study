@@ -4,7 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import common.DBConnector;
@@ -87,5 +89,57 @@ public class UserServiceImpl implements UserService {
 		
 	}
 
+	@Override
+	public int updateUser(Map<String, String> hm) {
+		Connection con;
+		try {
+			con = DBConnector.getCon();
+			String sql = "update user";
+			sql += " set name=?,";
+			sql += " password=?,";
+			sql += " hobby=?";
+			sql += " where user_no=?";
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setString(1, hm.get("name"));
+			ps.setString(2, hm.get("pwd"));
+			ps.setString(3, hm.get("hobby"));
+			ps.setString(4, hm.get("user_no"));
+			int row = ps.executeUpdate();
+			return row;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
 
+	@Override
+	public List<Map<String, String>> selectUserList(Map<String, String> hm) {
+		Connection con;
+		PreparedStatement ps;
+		List<Map<String, String>> userList = new ArrayList<Map<String, String>>();//List와 Map은 인터페이스임
+		try {
+			con = DBConnector.getCon();
+			System.out.println("연결 성공");
+			String sql = "select * from user";;
+			ps = con.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			while(rs.next()) {
+				Map<String, String> resultMap = new HashMap<String, String>();//같은 키에 다른 값을 해쉬맵에 저장하기 위해서는 여기서 Map을 호출
+					resultMap.put("id", rs.getString("id"));
+					resultMap.put("name", rs.getString("name"));
+					resultMap.put("hobby", rs.getString("hobby"));
+					resultMap.put("user_no", rs.getString("user_no"));
+					userList.add(resultMap);
+			}
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	
+		return userList;
+	}
 }
+
+
+
