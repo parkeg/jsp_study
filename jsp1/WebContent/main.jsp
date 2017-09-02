@@ -41,7 +41,6 @@ if(user != null){
 <input type="button" value="회원정보수정">
 <input type="button" value="회원리스트">
 <input type="hidden" name="command" id="command" value="logout">
-<input type="hidden" name="userNo" value="<%=userNo%>>">
 </form>	
 </body>
 </html>
