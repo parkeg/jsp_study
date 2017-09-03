@@ -12,8 +12,10 @@ public class DBConnector {
 			String url="jdbc:mysql://localhost:3306/jsp_study";
 			String id="root";
 			String pwd="jspstudy";
+			boolean autoCommit = false;
 			Class.forName("org.mariadb.jdbc.Driver");
 			con = DriverManager.getConnection(url,id,pwd);
+			con.setAutoCommit(autoCommit);
 		}
 		return con;
 	}
