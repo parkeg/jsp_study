@@ -17,7 +17,7 @@
 			str += "<td>"+b.regDate+"</td>";
 			str += "</tr>";
 		}
-		$("#r_div").html(str);
+		$("#r_tbody").html(str);
 	}
 	
 	$(document).ready(function(){
@@ -30,15 +30,16 @@
 </script>
 </head>
 <body>
-<div id="r_div"></div>
-<table border='1'>
-	<tr>
-		<td>번호</td>
-		<td>이름</td>
-		<td>내용</td>
-		<td>생성자</td>
-		<td>생성일자</td>
-	</tr>
+<table id="table" data-height="460" class="table table-borderde table-hover">
+	<thead>
+		<tr>
+			<th data-field="bNum" class="text-center">번호</th>
+			<th data-field="title" class="text-center">제목</th>
+			<th data-field="content" class="text-center">내용</th>
+			<th data-field="writer" class="text-center">게시자</th>
+			<th data-field="regDate" class="text-center">게시일자</th>
+		</tr>
+	</thead>>
 	<tbody id="r_tbody">
 	</tbody>
 </table>
